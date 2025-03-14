@@ -44,8 +44,10 @@ defmodule BananaBankWeb.Endpoint do
     pass: ["*/*"],
     json_decoder: Phoenix.json_library()
 
+  #plug Absinthe.Plug, schema: BananaBankWeb.Schema
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
   plug BananaBankWeb.Router
+
 end
