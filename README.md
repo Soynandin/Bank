@@ -176,3 +176,85 @@ A aplicação utiliza o padrão de **Repositórios** para separar as interaçõe
 #### Conexão com o Banco de Dados
 
 A conexão com o banco é configurada no arquivo de ambiente, permitindo que a aplicação se conecte ao banco PostgreSQL de maneira eficiente. O **BananaBank.Repo** é configurado para usar o adaptador **PostgreSQL**, permitindo realizar todas as operações necessárias de forma segura e eficiente.
+
+
+## Testando o CRUD no GraphQL
+
+### 🟢 1. Criar um Usuário (`create_user`)
+```graphql
+mutation {
+  createUser(
+    firstName: "João"
+    lastName: "Silva"
+    email: "joao.silva@example.com"
+    password: "senha123"
+    document: "12345678900"
+    role: "client"
+  ) {
+    id
+    firstName
+    lastName
+    email
+    document
+    role
+  }
+}
+```
+
+### 🔵 2. Listar Usuários (`users`)
+```graphql
+query {
+  users(limit: 5, offset: 0, orderBy: "first_name", direction: "asc") {
+    id
+    firstName
+    lastName
+    email
+    document
+    role
+  }
+}
+```
+
+### 🟠 3. Buscar um Usuário pelo ID (`user`)
+```graphql
+query {
+  user(id: 1) {
+    id
+    firstName
+    lastName
+    email
+    document
+    role
+  }
+}
+```
+
+### 🟡 4. Atualizar um Usuário (`update_user`)
+```graphql
+mutation {
+  updateUser(
+    id: 1
+    firstName: "Carlos"
+    lastName: "Souza"
+    email: "carlos.souza@example.com"
+    document: "12345678900"
+    role: "client"
+  ) {
+    id
+    firstName
+    lastName
+    email
+    document
+    role
+  }
+}
+```
+
+### 🔴 5. Deletar um Usuário (`delete_user`)
+```graphql
+mutation {
+  deleteUser(id: 1) {
+    message
+  }
+}
+```
