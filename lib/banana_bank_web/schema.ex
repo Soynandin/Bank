@@ -2,7 +2,12 @@ defmodule BananaBankWeb.Schema do
   use Absinthe.Schema
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   alias BananaBankWeb.Resolvers.UserResolver
+=======
+  alias BananaBankWeb.Resolvers.{UserResolver, AuthResolver}
+  alias BananaBankWeb.Middleware.{Authenticate}
+>>>>>>> Stashed changes
 =======
   alias BananaBankWeb.Resolvers.{UserResolver, AuthResolver}
   alias BananaBankWeb.Middleware.{Authenticate}
@@ -78,6 +83,9 @@ defmodule BananaBankWeb.Schema do
   resolve(&AuthResolver.refresh_token/3)
 end
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   end
 

@@ -53,6 +53,9 @@ defmodule BananaBank.MixProject do
       {:guardian, "~> 2.3"},
       {:joken, "~> 2.5"},
       {:brcpfcnpj, "~> 2.0"}
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     ]
   end
