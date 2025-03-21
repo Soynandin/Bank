@@ -3,7 +3,12 @@ defmodule BananaBankWeb.Schema do
 
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   alias BananaBankWeb.Resolvers.UserResolver
+=======
+  alias BananaBankWeb.Resolvers.{UserResolver, AuthResolver}
+  alias BananaBankWeb.Middleware.{Authenticate}
+>>>>>>> Stashed changes
 =======
   alias BananaBankWeb.Resolvers.{UserResolver, AuthResolver}
   alias BananaBankWeb.Middleware.{Authenticate}
@@ -84,6 +89,9 @@ defmodule BananaBankWeb.Schema do
 end
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
