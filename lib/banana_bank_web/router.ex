@@ -8,7 +8,13 @@ defmodule BananaBankWeb.Router do
       parsers: [:urlencoded, :multipart, :json, Absinthe.Plug.Parser],
       pass: ["*/*"],
       json_decoder: Jason
+    plug BananaBankWeb.AuthPipeline
   end
+
+  pipeline :graphql do
+    plug BananaBankWeb.Context
+  end
+
 
   # Define o escopo da API (prefixado com /api) e as rotas dentro deste escopo
   scope "/api", BananaBankWeb do
@@ -20,9 +26,12 @@ defmodule BananaBankWeb.Router do
 
   # Rotas GraphQL fora da pipeline :api
   scope "/" do
+    pipe_through [:graphql]  # Adiciona o pipeline que injeta o usuário no contexto do Absinthe
+
     forward "/graphql", Absinthe.Plug, schema: BananaBankWeb.Schema
     forward "/graphiql", Absinthe.Plug.GraphiQL, schema: BananaBankWeb.Schema, interface: :playground
   end
+
 
   # Habilita o LiveDashboard no ambiente de desenvolvimento
   if Application.compile_env(:banana_bank, :dev_routes) do

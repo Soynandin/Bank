@@ -1,10 +1,3 @@
-# This file is responsible for configuring your application
-# and its dependencies with the aid of the Config module.
-#
-# This configuration file is loaded before any dependency and
-# is restricted to this project.
-
-# General application configuration
 import Config
 
 config :banana_bank,
@@ -21,6 +14,10 @@ config :banana_bank, BananaBankWeb.Endpoint,
   ],
   pubsub_server: BananaBank.PubSub,
   live_view: [signing_salt: "JKpQ4w/2"]
+
+config :banana_bank, BananaBank.Guardian,
+  issuer: "banana_bank",
+  secret_key: "jhjRjHq6VlFOxraBn3deWqy+icMlF19vwsMle02m2mCf0wq2+1hdMfVSsLzlXTWV"
 
 # Configures Elixir's Logger
 config :logger, :console,

@@ -46,7 +46,9 @@ defmodule BananaBank.MixProject do
       {:pbkdf2_elixir, "~> 2.0"},
       {:absinthe, "~> 1.7"},
       {:absinthe_plug, "~> 1.5"},
-      {:absinthe_phoenix, "~> 2.0"}
+      {:absinthe_phoenix, "~> 2.0"},
+      {:guardian, "~> 2.3"},
+      {:joken, "~> 2.5"}
     ]
   end
 

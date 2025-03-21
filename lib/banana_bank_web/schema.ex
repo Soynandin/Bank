@@ -2,6 +2,7 @@ defmodule BananaBankWeb.Schema do
   use Absinthe.Schema
 
   alias BananaBankWeb.Resolvers.UserResolver
+  alias BananaBankWeb.Resolvers.AuthResolver
 
   query do
     field :users, list_of(:user) do
@@ -15,6 +16,14 @@ defmodule BananaBankWeb.Schema do
     field :user, :user do
       arg :id, non_null(:id)
       resolve(&UserResolver.get_user/3)
+    end
+
+    field :me, :user do
+      middleware BananaBankWeb.Middleware.Authenticate
+      resolve fn _, _, %{context: %{current_user: user}} ->
+        IO.inspect(user, label: "Usuário autenticado")
+        {:ok, user}
+      end
     end
   end
 
@@ -43,6 +52,18 @@ defmodule BananaBankWeb.Schema do
       arg :id, non_null(:id)
       resolve(&UserResolver.delete_user/3)
     end
+
+    field :login, :auth_payload do
+      arg :email, non_null(:string)
+      arg :password, non_null(:string)
+
+      resolve(&AuthResolver.login/3)
+    end
+
+    field :logout, :message do
+      middleware BananaBankWeb.Middleware.Authenticate
+      resolve(&AuthResolver.logout/3)
+    end
   end
 
   object :user do
@@ -60,5 +81,9 @@ defmodule BananaBankWeb.Schema do
 
   object :delete_user_response do
     field :message, :string
+  end
+
+  object :auth_payload do
+    field :token, :string
   end
 end
