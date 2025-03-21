@@ -1,7 +1,7 @@
 defmodule BananaBank.Users.List do
   alias BananaBank.Users.User
   alias BananaBank.Repo
-  import Ecto.Query, only: [from: 2] # Adicionando o import correto
+  import Ecto.Query, only: [from: 2]
 
   # Busca todos os usuários com paginação e ordenação
   def call(limit \\ 10, offset \\ 0, order_by \\ "name", direction \\ "asc") do

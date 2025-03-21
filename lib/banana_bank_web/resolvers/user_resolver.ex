@@ -34,16 +34,64 @@ defmodule BananaBankWeb.Resolvers.UserResolver do
         {:error, format_errors(changeset)}
     end
   end
-  def update_user(_parent, %{id: id} = args, _resolution) do
-    id = String.to_integer(to_string(id)) # Converte ID para inteiro
-    args = Map.put(args, :id, id)
 
-    case Update.call(args) do
-      {:ok, user} -> {:ok, user}
-      {:error, :not_found} -> {:error, "User not found"}
-      {:error, changeset} -> {:error, format_errors(changeset)}
+  def update_user(_parent, %{id: id} = args, %{context: %{current_user: current_user}}) do
+    id = String.to_integer(id)  # Converte o ID para inteiro
+    args = Map.put(args, :id, id)
+    args = Map.put(args, :current_user, current_user)  # Adiciona o current_user nos argumentos
+
+    case Get.call(id) do
+      {:ok, user} ->
+        updated_args = Map.merge(Map.from_struct(user), args)
+
+        case authorize_update(current_user, updated_args) do
+          :ok ->
+            case Update.call(updated_args) do
+              {:ok, user} -> {:ok, user}
+              {:error, :not_found} -> {:error, "Usuário não encontrado"}
+              {:error, msg} -> {:error, msg}
+            end
+
+          {:error, msg} -> {:error, msg}
+        end
+
+      {:error, :not_found} -> {:error, "Usuário não encontrado"}
     end
   end
+
+ # Função de autorização
+defp authorize_update(%{role: "admin"}, %{role: "admin"}), do: :ok
+defp authorize_update(%{role: "admin"}, _args), do: :ok
+
+defp authorize_update(%{role: "client"} = current_user, %{id: user_id, role: new_role}) when current_user.id == user_id do
+  # Client pode alterar apenas atributos próprios e não pode mudar para "admin"
+  if new_role == "admin" do
+    {:error, "Unauthorized: Client não pode se promover a admin"}
+  else
+    :ok
+  end
+end
+
+defp authorize_update(%{role: "agency"} = current_user, %{id: user_id, role: new_role}) when current_user.id == user_id do
+  # Agency pode alterar apenas atributos próprios e não pode mudar para "admin"
+  if new_role == "admin" do
+    {:error, "Unauthorized: Agency não pode se promover a admin"}
+  else
+    :ok
+  end
+end
+
+defp authorize_update(%{id: user_id, role: role}, %{id: user_id, role: new_role}) do
+  # Permite alteração de role entre "client" e "agency", mas não permite promover para "admin"
+  cond do
+    new_role == "admin" -> :ok  # Admin pode promover qualquer usuário para admin
+    role in ["client", "agency"] and new_role in ["client", "agency"] -> :ok
+    role == new_role -> :ok
+    true -> {:error, "Unauthorized"}
+  end
+end
+
+defp authorize_update(_, _), do: {:error, "Unauthorized"}
 
   def delete_user(_parent, %{id: id} = args, _resolution) do
     # Converte o ID para inteiro, como fizemos no update
@@ -57,8 +105,6 @@ defmodule BananaBankWeb.Resolvers.UserResolver do
       {:error, _reason} -> {:error, %{message: "Failed to delete user"}}
     end
   end
-
-
 
    # Corrigido para aceitar um mapa de erros já extraído do changeset
    def format_errors(errors) do

@@ -22,6 +22,13 @@ config :banana_bank, BananaBankWeb.Endpoint,
   pubsub_server: BananaBank.PubSub,
   live_view: [signing_salt: "JKpQ4w/2"]
 
+<<<<<<< Updated upstream
+=======
+config :banana_bank, BananaBank.Guardian,
+  issuer: "banana_bank",
+  secret_key:  System.get_env("GUARDIAN_SECRET") || "jhjRjHq6VlFOxraBn3deWqy+icMlF19vwsMle02m2mCf0wq2+1hdMfVSsLzlXTWV"
+
+>>>>>>> Stashed changes
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

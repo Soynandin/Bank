@@ -17,7 +17,13 @@ defmodule BananaBank.Users.Create do
 
   defp handle_insert_result({:error, changeset}) do
     errors = Ecto.Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
-    {:error, %{message: "Não foi possível criar o usuário", errors: errors}}
+
+    # Se o erro for relacionado ao email duplicado, trata o erro de forma amigável
+    if Enum.any?(errors, fn {field, _} -> field == :email end) do
+      {:error, %{message: "Este email já está em uso", errors: errors}}
+    else
+      {:error, %{message: "Não foi possível criar o usuário", errors: errors}}
+    end
   end
 
 end

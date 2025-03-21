@@ -39,17 +39,34 @@ A estrutura do projeto é organizada e segue boas práticas do Phoenix, além de
 
 ### 📂 `lib/banana_bank_web/`
 
-Contém a camada da interface, como controllers, resolvers, schemas e o router.
+Contém a camada de interface, incluindo controllers, resolvers, middlewares, plugs e o router.
 
-- **`controllers/`**: Responsável por lidar com as requisições HTTP REST, como as rotas CRUD para o gerenciamento de usuários. O **`UsersController`** gerencia as operações como criar, atualizar, mostrar e excluir usuários.
+- **`controllers/`**: Responsável por lidar com as requisições HTTP REST, como as rotas CRUD para o gerenciamento de usuários. 
+  - **`UsersController`** gerencia as operações como criar, atualizar, mostrar e excluir usuários.
+  - **`auth_error_handler.ex`**: Manipula erros de autenticação.
+  - **`error_json.ex`**: Define a estrutura de resposta para erros.
+  - **`fallback_controller.ex`**: Define respostas padrão para erros.
   
 - **`resolvers/`**: Esta pasta contém os módulos de resolução para o **GraphQL**. Cada resolver é responsável por implementar a lógica de negócios associada a uma consulta ou mutação.
+
+  - **`auth_resolver.ex`**: Lida com autenticação e geração de tokens, incluindo:
+    - **`login/3`**: Realiza a autenticação do usuário e retorna tokens.
+    - **`refresh_token/3`**: Atualiza o token de acesso usando um token de refresh.
+    - **`logout/3`**: Revoga o token de autenticação e finaliza a sessão do usuário.
+
   - **`user_resolver.ex`**: Contém a lógica para resolver as consultas e mutações relacionadas aos usuários, como:
     - **`list_users/3`**: Resolve a consulta para listar os usuários com parâmetros de paginação e ordenação.
     - **`get_user/3`**: Resolve a consulta para buscar um usuário específico pelo `id`.
     - **`create_user/3`**: Resolve a mutação para criar um novo usuário.
     - **`update_user/3`**: Resolve a mutação para atualizar os dados de um usuário.
     - **`delete_user/3`**: Resolve a mutação para deletar um usuário.
+
+- **`middleware/`**: Contém middlewares para controle de autenticação e extração de tokens.
+  - **`authenticate.ex`**: Middleware de autenticação para proteger rotas.
+  - **`extract_refresh_token.ex`**: Middleware para extração de tokens de refresh.
+
+- **`plugs/`**: Contém os plugs usados na autenticação.
+  - **`auth_pipeline.ex`**: Define o pipeline de autenticação usando Guardian.
 
 - **`schema.ex`**: Define o esquema do GraphQL, incluindo as consultas e mutações. Este arquivo conecta as consultas/mutações aos respectivos resolvers.
 
@@ -59,13 +76,22 @@ Contém a camada da interface, como controllers, resolvers, schemas e o router.
 
 Contém a lógica de negócios e interações com o banco de dados.
 
+- **`auth/`**: Gerencia autenticação e autorização.
+  - **`auth.ex`**: Lógica central de autenticação.
+  - **`guardian.ex`**: Implementação do Guardian para autenticação JWT.
+
 - **`users/`**: Contém os módulos para as operações de negócios relacionadas ao gerenciamento de usuários.
   - **`create.ex`**: Responsável pela criação de um novo usuário, incluindo validações.
   - **`update.ex`**: Responsável pela atualização de dados de usuários.
   - **`delete.ex`**: Responsável pela exclusão de usuários.
   - **`get.ex`**: Responsável pela busca de usuários, seja para exibição ou manipulação.
+  - **`get_by_email.ex`**: Busca de usuários por e-mail.
+  - **`list.ex`**: Listagem de usuários.
+  - **`user.ex`**: Define o schema do usuário.
   
+- **`application.ex`**: Configuração principal da aplicação.
 - **`repo.ex`**: Gerencia a interação com o banco de dados (geralmente usando o **Ecto**). Ele é responsável pela configuração da conexão e pelas migrações.
+- **`users.ex`**: Contexto que agrupa as operações do módulo users/.
 
 ### 📂 `priv/repo/migrations/`
 
@@ -96,8 +122,9 @@ Para buscar um usuário específico, o resolver **`UserResolver.get_user/3`** é
 Para criar um usuário, o resolver **`UserResolver.create_user/3`** chama o módulo **`Users.Create`**, que aplica as validações usando o **Changeset**:
 - Valida se todos os parâmetros obrigatórios estão presentes: `first_name`, `last_name`, `email`, `password`, `document` e `role`.
 - O campo `email` é validado com um formato específico.
-- O campo `role` é validado para aceitar apenas os valores "client" ou "agency".
+- O campo `role` é validado para aceitar apenas os valores "client", "agency" ou "admin".
 - A senha é criptografada utilizando **Pbkdf2** antes de ser armazenada no banco de dados.
+- O campo `document` é validado para garantir que seja um CPF ou CNPJ válido, utilizando a biblioteca **Brcpfcnpj**. Caso o documento não seja válido, é retornado um erro."
 - Caso algum erro de validação ocorra, ele é retornado como uma mensagem clara de erro com os campos falhos.
 
 #### 4. **Atualizar Usuário**
@@ -106,6 +133,7 @@ Para atualizar um usuário, o resolver **`UserResolver.update_user/3`** chama o 
 - Aplica as alterações usando o **Changeset**, onde apenas os campos `first_name`, `last_name`, `email`, `document` e `role` são obrigatórios para a atualização parcial.
 - Se a atualização for bem-sucedida, os dados do usuário são retornados.
 - Se houver erros de validação, uma mensagem com detalhes do erro será retornada.
+**Importante**: A aplicação de alterações no campo role é restrita. Somente administradores podem alterar o campo role para admin. Usuários com a role client ou agency não podem se promover a admin.
 
 #### 5. **Excluir Usuário**
 Para excluir um usuário, o resolver **`UserResolver.delete_user/3`** invoca o módulo **`Users.Delete`**:
@@ -122,10 +150,10 @@ Em todas as operações, caso ocorra um erro, a aplicação garante que a respos
 #### 7. **Validações Específicas**
 A validação de dados do usuário segue as seguintes regras:
 - **`first_name`** e **`last_name`**: Campos obrigatórios para a criação e atualização do usuário.
-- **`email`**: Validado com uma expressão regular que garante um formato correto.
-- **`document`**: Campo obrigatório para identificação (como CPF ou CNPJ).
-- **`role`**: O campo de **`role`** só pode ter os valores `"client"` ou `"agency"`.
-- **`password`**: A senha é tratada de forma segura, sendo convertida para um hash com **Pbkdf2** antes de ser salva no banco de dados.
+- **`email`**: Validado com uma expressão regular que garante um formato correto de e-mail. Caso o e-mail já exista no banco de dados, será retornado um erro de unicidade.
+- **`document`**: Campo obrigatório e validado para garantir que seja um CPF ou CNPJ válido. Caso o documento fornecido não seja válido, será retornado um erro: "Documento inválido. Insira um CPF ou CNPJ válido.".
+- **`role`**: O campo de role só pode ter os valores "client", "agency" ou "admin". Além disso, para atualização, um usuário com o papel de "client" ou "agency" não pode ser promovido a "admin", ou seja, a mudança para o papel "admin" é restrita a administradores.
+- **`password`**: A senha é tratada de forma segura, sendo convertida para um hash com Pbkdf2 antes de ser salva no banco de dados. A senha só será validada e processada quando fornecida no processo de criação ou atualização de usuário.
 
 ### **Adendo para o password**
 ### Dinâmica de Senha
@@ -177,6 +205,53 @@ A aplicação utiliza o padrão de **Repositórios** para separar as interaçõe
 
 A conexão com o banco é configurada no arquivo de ambiente, permitindo que a aplicação se conecte ao banco PostgreSQL de maneira eficiente. O **BananaBank.Repo** é configurado para usar o adaptador **PostgreSQL**, permitindo realizar todas as operações necessárias de forma segura e eficiente.
 
+---
+
+## Autenticação de Usuários
+A autenticação na sua API é baseada no uso de tokens JWT (JSON Web Tokens), combinados com um refresh token para manter a sessão ativa de maneira segura, sem a necessidade de o usuário fazer login repetidamente. O processo de autenticação envolve a verificação das credenciais do usuário, a criação de tokens para acesso e a possibilidade de renovar esses tokens quando expiram, tudo isso implementado usando o módulo Guardian para gerenciamento de tokens.
+
+1. Verificação de Credenciais de Login
+Quando um usuário tenta se autenticar, ele fornece seu e-mail e senha. O processo de autenticação segue estes passos:
+
+  - Busca pelo Usuário: A API primeiro verifica se o usuário existe no banco de dados, buscando o e-mail fornecido.
+  - Verificação de Senha: Após localizar o usuário, a senha fornecida é comparada com a senha armazenada. A senha não é armazenada em texto claro, mas sim como um hash seguro, usando o algoritmo Pbkdf2. Isso garante que mesmo se alguém acessar a base de dados, as senhas não possam ser facilmente obtidas.
+
+Se a senha não for válida, a autenticação falha e um erro é retornado.
+
+2. Geração de Tokens (Access Token e Refresh Token)
+Uma vez que as credenciais do usuário sejam validadas, a API gera dois tipos de tokens:
+
+Access Token (Token de Acesso): Este é o principal token utilizado para autenticar as requisições do usuário. Ele tem um tempo de vida curto (geralmente 15 minutos) e é usado para garantir que as requisições subsequentes do usuário sejam feitas de maneira segura. O token é assinado com informações do usuário, de forma que, quando incluído no cabeçalho de uma requisição (geralmente no formato "Bearer token"), ele pode ser verificado para garantir que a requisição é legítima.
+
+Refresh Token (Token de Renovação): O refresh token é usado para renovar o access token quando ele expira, sem que o usuário precise fazer login novamente. O refresh token tem um tempo de vida mais longo (geralmente 7 dias). Ele é armazenado de forma segura e pode ser usado para obter um novo access token, garantindo uma experiência contínua para o usuário.
+
+Esses dois tokens são retornados para o cliente logo após a autenticação ser bem-sucedida.
+
+3. Uso de Tokens nas Requisições
+Quando o usuário faz requisições autenticadas, ele deve enviar o access token no cabeçalho de autorização (normalmente como "Authorization: Bearer {token}"). A API, ao receber esse token, realiza os seguintes passos para verificar a autenticidade da requisição:
+
+  - Decodificação e Verificação do Token: A API usa o módulo Guardian para decodificar e verificar se o access token é válido. Isso envolve a validação da assinatura do token e a verificação de que ele não expirou.
+  - Carregamento de Dados do Usuário: Após verificar que o token é válido, a API pode acessar os dados do usuário, como seu ID, papel (role) e outros dados associados, para garantir que ele tem permissão para realizar a ação solicitada.
+
+Se o token for inválido ou expirado, a requisição é rejeitada com um erro de "não autorizado".
+
+4. Renovação do Access Token
+Quando o access token expira, o cliente pode utilizar o refresh token para obter um novo access token sem precisar que o usuário faça login novamente.
+
+Verificação do Refresh Token: A API valida o refresh token usando o Guardian, verificando sua integridade e se ele está dentro do seu período de validade. Se o refresh token for válido, a API gera um novo access token e o retorna ao usuário, junto com o refresh token original (caso ele ainda seja válido). Caso contrário, o processo de renovação falha e um erro é retornado.
+
+5. Revogação de Tokens
+Se o usuário fizer logout ou o refresh token precisar ser revogado por algum motivo (por exemplo, em caso de violação de segurança ou mudança de senha), a API pode revogar todos os refresh tokens associados à sessão do usuário. Isso faz com que os tokens anteriores se tornem inválidos, e o usuário precise fazer login novamente para obter novos tokens.
+
+6. Middleware e Controle de Acesso
+Para garantir que apenas usuários autenticados possam acessar determinadas rotas, a API utiliza middleware para verificar se o usuário está autenticado antes de permitir o acesso. Esse middleware verifica se o contexto da requisição contém informações sobre o usuário autenticado (geralmente extraídas do token) e, se não, retorna um erro de "não autorizado".
+
+Além disso, a API usa o contexto para garantir que o usuário autenticado tenha acesso às informações e funcionalidades apropriadas. Por exemplo, no GraphQL, o middleware de autenticação é usado para garantir que o usuário tenha um contexto válido antes de acessar qualquer dado.
+
+7. Logout e Encerramento de Sessão
+O processo de logout envolve a revogação do refresh token. Quando um usuário decide sair, o refresh token que estava sendo usado para autenticar a sessão é revogado, tornando todos os tokens anteriores inválidos. Isso efetivamente encerra a sessão do usuário e impede o uso de tokens antigos.
+
+---
 
 ## Testando o CRUD no GraphQL
 
