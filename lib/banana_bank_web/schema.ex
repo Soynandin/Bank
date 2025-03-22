@@ -39,14 +39,16 @@ defmodule BananaBankWeb.Schema do
     end
 
     field :update_user, :user do
+      middleware BananaBankWeb.Middleware.Authenticate
       arg :id, non_null(:id)
-      arg :first_name, :string  # Alteração para first_name
-      arg :last_name, :string   # Alteração para last_name
+      arg :first_name, :string
+      arg :last_name, :string
       arg :email, :string
-      arg :document, :string    # Alteração para document (CPF/CNPJ)
-      arg :role, :string        # Alteração para role (client ou agency)
+      arg :document, :string
+      arg :role, :string
       resolve(&UserResolver.update_user/3)
     end
+
 
     field :delete_user, :delete_user_response do
       arg :id, non_null(:id)
