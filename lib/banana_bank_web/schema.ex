@@ -56,9 +56,13 @@ defmodule BananaBankWeb.Schema do
     field :login, :auth_payload do
       arg :email, non_null(:string)
       arg :password, non_null(:string)
-
       resolve(&AuthResolver.login/3)
     end
+
+    field :refresh_token, :auth_payload do
+      arg :refresh_token, non_null(:string)
+      resolve(&AuthResolver.refresh_token/3)
+     end
 
     field :logout, :message do
       middleware BananaBankWeb.Middleware.Authenticate
@@ -84,6 +88,8 @@ defmodule BananaBankWeb.Schema do
   end
 
   object :auth_payload do
-    field :token, :string
+    field :access_token, :string
+    field :refresh_token, :string
   end
+
 end

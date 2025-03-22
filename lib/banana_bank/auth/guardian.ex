@@ -13,13 +13,13 @@ defmodule BananaBank.Guardian do
   end
 
   def authenticate(email, password) when is_binary(password) and byte_size(password) > 0 do
-    with {:ok, user} <- Users.get_by_email(email),
-         true <- Pbkdf2.verify_pass(password, user.password_hash) do
-      {:ok, user}
-    else
-      _ -> {:error, "Invalid credentials"}
+    case Users.get_by_email(email) do
+      {:ok, user} ->
+        if Pbkdf2.verify_pass(password, user.password_hash), do: {:ok, user}, else: {:error, "Incorrect password"}
+      _ -> {:error, "User not found"}
     end
   end
+
 
   def authenticate(_email, _password), do: {:error, "Invalid credentials"}
 end
