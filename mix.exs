@@ -48,7 +48,8 @@ defmodule BananaBank.MixProject do
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_phoenix, "~> 2.0"},
       {:guardian, "~> 2.3"},
-      {:joken, "~> 2.5"}
+      {:joken, "~> 2.5"},
+      {:brcpfcnpj, "~> 2.0"}
     ]
   end
 
