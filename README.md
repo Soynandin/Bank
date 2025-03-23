@@ -235,7 +235,7 @@ mutation {
   }
 }
 ```
-#### **Adendo sobre a autenticação de usuários**
+### **Adendo sobre a autenticação de usuários**
 O padrão é enviar o access token no cabeçalho das requisições subsequentes para autenticar o usuário. A chave no cabeçalho deve ser Authorization e o valor deve ser o token, precedido pela palavra Bearer, assim:
 ```http
 Authorization: Bearer <access_token>
@@ -254,14 +254,14 @@ Authorization: Bearer <access_token>
     - O logout revoga o access token atual, e para isso, o access token precisa ser enviado no cabeçalho da requisição para que o servidor possa identificar qual token revogar.
 
 
-#### **Tratamento de Erros**
+### **Tratamento de Erros**
 Em todas as operações, caso ocorra um erro, a aplicação garante que a resposta seja informativa:
 - **Erro de ID inválido**: Caso um ID fornecido não seja um número válido, o sistema retornará `"Invalid ID format"`.
 - **Erro de usuário não encontrado**: Se a busca ou exclusão de um usuário não encontrar o usuário no banco, retornará `"User not found"`.
 - **Erros de validação**: Se os dados enviados para a criação ou atualização de um usuário não forem válidos, o sistema retornará uma mensagem com detalhes sobre o erro em cada campo específico.
 
 ### **Adendo para o password**
-### Dinâmica de Senha
+#### Dinâmica de Senha
 
 A aplicação utiliza o algoritmo **Pbkdf2** para armazenar as senhas de forma segura. A senha do usuário não é armazenada diretamente no banco de dados; em vez disso, é gerado um **hash** da senha.
 
