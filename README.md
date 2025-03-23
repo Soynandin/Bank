@@ -281,19 +281,3 @@ A aplicação utiliza o **Ecto** para interagir com o banco de dados, usando o *
 #### Estrutura do Banco de Dados
 
 - **BananaBank.Repo**: É o módulo principal que interage diretamente com o banco de dados. Ele utiliza o adaptador do **Ecto.Adapters.Postgres** para conectar-se ao banco de dados PostgreSQL. O módulo é responsável por configurar as conexões e executar as consultas Ecto.
-
-#### Aplicação e Repositório
-
-O módulo **BananaBank.Application** é o ponto de entrada da aplicação, onde o **BananaBank.Repo** é iniciado e supervisionado. Ele também inicia outros processos, como o Telemetry para monitoramento de desempenho e o **Phoenix.Endpoint** para servir as requisições web.
-
-#### Phoenix Endpoint
-
-O **BananaBankWeb.Endpoint** é responsável por servir as requisições HTTP, incluindo o gerenciamento de sessões e recursos estáticos. Ele também configura as ferramentas necessárias para o **Phoenix LiveView**, **Absinthe (para GraphQL)** e outras dependências de middleware, como o **Phoenix.CodeReloader** e **Plug**.
-
-#### Relacionamento entre Módulos
-
-A aplicação utiliza o padrão de **Repositórios** para separar as interações com o banco de dados. O **BananaBank.Repo** é o responsável por acessar diretamente as tabelas no banco. Cada módulo do sistema (como `Users.Create`, `Users.Update`, `Users.Get`, etc.) utiliza este repositório para realizar operações como criação, leitura, atualização e exclusão de usuários, enquanto o Ecto gerencia as transações e validações.
-
-#### Conexão com o Banco de Dados
-
-A conexão com o banco é configurada no arquivo de ambiente, permitindo que a aplicação se conecte ao banco PostgreSQL de maneira eficiente. O **BananaBank.Repo** é configurado para usar o adaptador **PostgreSQL**, permitindo realizar todas as operações necessárias de forma segura e eficiente.
