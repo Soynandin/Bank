@@ -35,26 +35,25 @@ mix phx.routes
 
 ## User
 
-  1. **Atributos do Usuário**
+1. **Atributos do Usuário**
+  - **`id`** (`id`): Identificador único do usuário.
+  - **`first_name`** (`string`): Primeiro nome do usuário.
+  - **`last_name`** (`string`): Sobrenome do usuário.
+  - **`email`** (`string`): Endereço de e-mail do usuário.
+  - **`password`** (`string`, virtual): Senha do usuário (não armazenada diretamente, apenas usada para gerar o `password_hash`).
+  - **`password_hash`** (`string`): Hash da senha do usuário armazenado no banco de dados.
+  - **`document`** (`string`): Documento do usuário (CPF ou CNPJ).
+  - **`role`** (`string`): Papel do usuário no sistema. Pode ser:
+  - **`inserted_at`** (`timestamp`): Data de criação do usuário.
+  - **`updated_at`** (`timestamp`): Data da última atualização do usuário.
 
-    - **`id`** (`id`): Identificador único do usuário.
-    - **`first_name`** (`string`): Primeiro nome do usuário.
-    - **`last_name`** (`string`): Sobrenome do usuário.
-    - **`email`** (`string`): Endereço de e-mail do usuário.
-    - **`password`** (`string`, virtual): Senha do usuário (não armazenada diretamente, apenas usada para gerar o `password_hash`).
-    - **`password_hash`** (`string`): Hash da senha do usuário armazenado no banco de dados.
-    - **`document`** (`string`): Documento do usuário (CPF ou CNPJ).
-    - **`role`** (`string`): Papel do usuário no sistema. Pode ser:
-    - **`inserted_at`** (`timestamp`): Data de criação do usuário.
-    - **`updated_at`** (`timestamp`): Data da última atualização do usuário.
+2. **Regras de Negócio e Validações**
 
-  2. **Regras de Negócio e Validações**
-
-    - O campo `email` deve ser único e seguir um formato válido.
-    - O campo `document` deve ser um CPF ou CNPJ válido.
-    - A senha do usuário é criptografada usando `Pbkdf2`.
-    - A role do usuário deve ser uma das opções permitidas (`client`, `agency`, `admin`).
-    - Apenas administradores podem modificar a role para `admin`.
+  - O campo `email` deve ser único e seguir um formato válido.
+  - O campo `document` deve ser um CPF ou CNPJ válido.
+  - A senha do usuário é criptografada usando `Pbkdf2`.
+  - A role do usuário deve ser uma das opções permitidas (`client`, `agency`, `admin`).
+  - Apenas administradores podem modificar a role para `admin`.
 
 ---
 
