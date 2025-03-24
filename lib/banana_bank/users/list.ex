@@ -10,9 +10,10 @@ defmodule BananaBank.Users.List do
 
     # Validação do campo de ordenação
     order_field =
-      case order_by in @valid_fields do
-        true -> String.to_existing_atom(order_by)
-        false -> :first_name  # Define um campo padrão caso o fornecido seja inválido
+      if order_by in @valid_fields do
+        String.to_atom(order_by)  # Converte para átomo
+      else
+        :first_name  # Usa um valor padrão caso seja inválido
       end
 
     query =
