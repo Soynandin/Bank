@@ -142,12 +142,11 @@ Para atualizar um usuário, o resolver **`UserResolver.update_user/3`** chama o 
   - Se o **usuário atual** não tem permissão para a ação, um erro de "Unauthorized to update this user" é retornado.
 - O usuário só é atualizado caso esteja logado, isto é, se o token jwt estiver ativo no **Header**.
 - Se a alteração for permitida, um **Changeset** é aplicado com os campos `first_name`, `last_name`, `email`, `document` e `role`, sendo que `role` não pode ser alterado para "admin" por clientes ou agências.
-- Se houver erros de validação, como:
+- Uma mensagem de erro irá ser retornada se houver erros de validação, como:
   - Email já cadastrado.
   - Cpf ou cnpj inválido.
   - Campo vazio
   - Id inválido | inexistente
-Uma mensagem de erro irá ser retornada.
 - Se a atualização for bem-sucedida, os dados do usuário atualizado são retornados.
 
 #### **Modelo Graphiql**
