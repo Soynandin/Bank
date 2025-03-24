@@ -104,7 +104,7 @@ query {
 #### 3. **Criar Usuário**
 Para criar um usuário, o resolver **`UserResolver.create_user/3`** chama o módulo **`Users.Create`**, que aplica as validações usando o **Changeset**:
 - Valida se todos os parâmetros obrigatórios estão presentes: `first_name`, `last_name`, `email`, `password`, `document` e `role`.
-- O campo `email` é validado com um formato específico.
+- O campo `email` é validado com um formato específico (example@example.example) e deve ser **Único**.
 - O campo `role` é validado para aceitar apenas os valores "client", "agency" ou "admin".
 - O campo `document` é validado para garantir que seja um CPF ou CNPJ válido.
 - A senha é criptografada utilizando **Pbkdf2** antes de ser armazenada no banco de dados.
