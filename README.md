@@ -192,7 +192,7 @@ Para realizar o login, o resolver **`AuthResolver.login/3`** é utilizado:
 - Se as credenciais forem válidas, dois tokens são gerados:
   - **Access Token** com validade de 15 minutos.
   - **Refresh Token** com validade de 7 dias.
-- O retorno é um objeto contendo os tokens gerados, bem como informações básicas do usuário (id, email, role).
+- O retorno é um objeto contendo os tokens gerados.
 - Se as credenciais forem inválidas, um erro é retornado com a mensagem apropriada.
 
 #### **Modelo Graphiql**
@@ -269,8 +269,6 @@ A aplicação utiliza o algoritmo **Pbkdf2** para armazenar as senhas de forma s
 - O campo `password_hash` armazena o **hash** da senha no banco de dados.
 
 Durante a criação ou atualização do usuário, a senha fornecida é processada e convertida em um **hash** seguro utilizando **Pbkdf2**. O hash gerado é armazenado no banco de dados, nunca a senha em texto claro.
-
-O uso do **Pbkdf2** impede que a senha em texto claro seja exposta, tornando o sistema mais seguro contra ataques.
 
 ---
 
