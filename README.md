@@ -9,8 +9,7 @@ Para o consumo com **GraphQL** todos os dados são manipulados através de queri
 
 Endpoint: `POST /graphql`
 
-Para testar as rotas, você pode usar a interface interativa GraphiQL para as consultas GraphQL:
-GraphiQL: Acesse `http://localhost:4000/graphiql` para testar suas queries e mutations de forma interativa.
+Para testar as rotas, você pode usar a interface interativa GraphiQL para as consultas GraphQL: `http://localhost:4000/graphiql`
 
 Para o consumo **Rest** as rotas são:
 
