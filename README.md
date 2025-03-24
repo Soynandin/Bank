@@ -65,7 +65,7 @@ O gerenciamento de usuários na aplicação segue o modelo de **GraphQL** para i
 Quando uma requisição de listagem de usuários é feita via **GraphQL**, o resolver `UserResolver.list_users/3` é chamado. Esse resolver invoca o módulo **`Users.List`** para buscar todos os usuários com os parâmetros de **paginações** e **ordenação**. A consulta é feita através do Ecto com os seguintes parâmetros:
 - **`limit`**: Limite de usuários retornados (padrão: 10).
 - **`offset`**: Deslocamento de resultados para paginação (padrão: 0).
-- **`order_by`**: Coluna para ordenação (padrão: "name").
+- **`order_by`**: Coluna para ordenação (padrão: "first_name").
 - **`direction`**: Direção da ordenação (padrão: "asc").
 
 #### **Modelo Graphiql**
@@ -194,13 +194,8 @@ Para realizar o login, o resolver **`AuthResolver.login/3`** é utilizado:
 ```graphql
 mutation {
   login(email: "user@example.com", password: "password123") {
-    access_token
-    refresh_token
-    user {
-      id
-      email
-      role
-    }
+    accessToken
+    refreshToken
   }
 }
 

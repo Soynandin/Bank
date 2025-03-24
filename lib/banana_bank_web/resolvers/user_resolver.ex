@@ -6,14 +6,18 @@ defmodule BananaBankWeb.Resolvers.UserResolver do
   alias BananaBank.Users.Update
 
   def list_users(_parent, args, _resolution) do
-    # Pegando os parâmetros de paginação e ordenação
-    limit = Map.get(args, :limit, 10) # Definindo o limite padrão como 10
-    offset = Map.get(args, :offset, 0) # Definindo o offset padrão como 0
-    order_by = Map.get(args, :order_by, "name") # Coluna a ser ordenada
-    direction = Map.get(args, :direction, "asc") # Direção de ordenação (asc ou desc)
+    limit = Map.get(args, :limit, 10)
+    offset = Map.get(args, :offset, 0)
+    order_by = Map.get(args, :order_by, "first_name") |> validate_order_by()
+    direction = Map.get(args, :direction, "asc")
 
-    {:ok, Users.get_all(limit, offset, order_by, direction)} # Passando os parâmetros para a função
+    {:ok, Users.List.call(limit, offset, order_by, direction)}
   end
+
+  defp validate_order_by(nil), do: "first_name"
+  defp validate_order_by(""), do: "first_name"
+  defp validate_order_by(field), do: field
+
 
   def get_user(_, %{id: id}, _) do
     case Get.call(id) do

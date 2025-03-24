@@ -17,7 +17,7 @@ defmodule BananaBank.Users.Update do
 
           # Client ou Agency só pode alterar a si mesmo e não pode mudar seu próprio role para admin
           current_user.id == user.id ->
-            if valid_role_change?(params) do  # Removemos current_user aqui
+            if valid_role_change?(params) do
               update(user, params)
             else
               {:error, "Cannot change role to admin"}
