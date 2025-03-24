@@ -62,7 +62,7 @@ mix phx.routes
 O gerenciamento de usuários na aplicação segue o modelo de **GraphQL** para interagir com os dados. Cada operação de criação, leitura, atualização e exclusão é tratada por resolvers específicos. Aqui está um detalhamento de como cada operação funciona, incluindo validações e tratamentos de erro:
 
 #### 1. **Listar Usuários**
-Quando uma requisição de listagem de usuários é feita via **GraphQL**, o resolver `UserResolver.list_users/3` é chamado. Esse resolver invoca o módulo **`Users.List`** para buscar todos os usuários com os parâmetros de **paginações** e **ordenação**. A consulta é feita através do Ecto com os seguintes parâmetros:
+Quando uma requisição de listagem de usuários é feita via **GraphQL**, o resolver `UserResolver.list_users/3` é chamado. Esse resolver invoca o módulo **`Users.List`** para buscar todos os usuários com os parâmetros de **paginações** e **ordenação**. Caso nenhum atributo (ou um atributo inválido) seja passado por parâmetro em **`order_by`**, o atributo **`first_name`** definido por padrão e utilizado. A consulta é feita através do Ecto com os seguintes parâmetros:
 - **`limit`**: Limite de usuários retornados (padrão: 10).
 - **`offset`**: Deslocamento de resultados para paginação (padrão: 0).
 - **`order_by`**: Coluna para ordenação (padrão: "first_name").
@@ -140,9 +140,15 @@ Para atualizar um usuário, o resolver **`UserResolver.update_user/3`** chama o 
   - Administradores (`role: "admin"`) podem alterar qualquer usuário, incluindo a si mesmos.
   - Clientes ou Agências podem alterar apenas a si mesmos, e não podem modificar seu próprio papel para "admin".
   - Se o **usuário atual** não tem permissão para a ação, um erro de "Unauthorized to update this user" é retornado.
+- O usuário só é atualizado caso esteja logado, isto é, se o token jwt estiver ativo no **Header**.
 - Se a alteração for permitida, um **Changeset** é aplicado com os campos `first_name`, `last_name`, `email`, `document` e `role`, sendo que `role` não pode ser alterado para "admin" por clientes ou agências.
+- Se houver erros de validação, como:
+  - Email já cadastrado.
+  - Cpf ou cnpj inválido.
+  - Campo vazio
+  - Id inválido | inexistente
+Uma mensagem de erro irá ser retornada.
 - Se a atualização for bem-sucedida, os dados do usuário atualizado são retornados.
-- Se houver erros de validação, uma mensagem detalhada com os erros será retornada.
 
 #### **Modelo Graphiql**
 ```graphql
@@ -168,8 +174,8 @@ mutation {
 #### 5. **Excluir Usuário**
 Para excluir um usuário, o resolver **`UserResolver.delete_user/3`** invoca o módulo **`Users.Delete`**:
 - A operação tenta excluir o usuário pelo **ID**.
-- Se o usuário não for encontrado, retorna um erro: `"User not found"`.
-- Se a exclusão for bem-sucedida, retorna uma mensagem de sucesso.
+- Se o usuário não for encontrado, retorna um erro: `"Failed to delete user"`.
+- Se a exclusão for bem-sucedida, retorna uma mensagem de sucesso: `"User deleted successfully"`.
 
 #### **Modelo Graphiql**
 ```graphql
