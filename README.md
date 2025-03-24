@@ -146,6 +146,7 @@ Para atualizar um usuário, o resolver **`UserResolver.update_user/3`** chama o 
   - Cpf ou cnpj inválido.
   - Campo vazio
   - Id inválido | inexistente
+  - Regras do campo `role` não obedecidas
 - Se a atualização for bem-sucedida, os dados do usuário atualizado são retornados.
 
 #### **Modelo Graphiql**
