@@ -62,7 +62,7 @@ mix phx.routes
 O gerenciamento de usuários na aplicação segue o modelo de **GraphQL** para interagir com os dados. Cada operação de criação, leitura, atualização e exclusão é tratada por resolvers específicos. Aqui está um detalhamento de como cada operação funciona, incluindo validações e tratamentos de erro:
 
 #### 1. **Listar Usuários**
-Quando uma requisição de listagem de usuários é feita via **GraphQL**, o resolver `UserResolver.list_users/3` é chamado. Esse resolver invoca o módulo **`Users.List`** para buscar todos os usuários com os parâmetros de **paginações** e **ordenação**. Caso nenhum atributo (ou um atributo inválido) seja passado por parâmetro em **`order_by`**, o atributo **`first_name`** definido por padrão e utilizado. A consulta é feita através do Ecto com os seguintes parâmetros:
+Quando uma requisição de listagem de usuários é feita via **GraphQL**, o resolver `UserResolver.list_users/3` é chamado. Esse resolver invoca o módulo **`Users.List`** para buscar todos os usuários com os parâmetros de **paginações** e **ordenação**. Caso nenhum atributo (ou um atributo inválido) seja passado por parâmetro em **`order_by`**, o atributo **`first_name`** será definido por padrão e utilizado. A consulta é feita através do Ecto com os seguintes parâmetros:
 - **`limit`**: Limite de usuários retornados (padrão: 10).
 - **`offset`**: Deslocamento de resultados para paginação (padrão: 0).
 - **`order_by`**: Coluna para ordenação (padrão: "first_name").
