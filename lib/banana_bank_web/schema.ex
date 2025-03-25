@@ -92,6 +92,7 @@ defmodule BananaBankWeb.Schema do
   object :auth_payload do
     field :access_token, :string
     field :refresh_token, :string
+    field :user, :user
   end
 
 end
