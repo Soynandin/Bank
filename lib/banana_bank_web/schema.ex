@@ -1,22 +1,8 @@
 defmodule BananaBankWeb.Schema do
   use Absinthe.Schema
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  alias BananaBankWeb.Resolvers.UserResolver
-=======
   alias BananaBankWeb.Resolvers.{UserResolver, AuthResolver}
   alias BananaBankWeb.Middleware.{Authenticate}
->>>>>>> Stashed changes
-=======
-  alias BananaBankWeb.Resolvers.{UserResolver, AuthResolver}
-  alias BananaBankWeb.Middleware.{Authenticate}
->>>>>>> Stashed changes
-=======
-  alias BananaBankWeb.Resolvers.{UserResolver, AuthResolver}
-  alias BananaBankWeb.Middleware.{Authenticate}
->>>>>>> Stashed changes
 
   query do
     field :users, list_of(:user) do
@@ -31,8 +17,6 @@ defmodule BananaBankWeb.Schema do
       arg :id, non_null(:id)
       resolve(&UserResolver.get_user/3)
     end
-<<<<<<< Updated upstream
-=======
 
     field :me, :user do
       middleware Authenticate
@@ -40,7 +24,6 @@ defmodule BananaBankWeb.Schema do
         {:ok, user}
       end
     end
->>>>>>> Stashed changes
   end
 
   mutation do
@@ -68,8 +51,6 @@ defmodule BananaBankWeb.Schema do
       arg :id, non_null(:id)
       resolve(&UserResolver.delete_user/3)
     end
-<<<<<<< Updated upstream
-=======
 
     field :login, :auth_payload do
       arg :email, non_null(:string)
@@ -82,19 +63,10 @@ defmodule BananaBankWeb.Schema do
       resolve(&AuthResolver.logout/3)
     end
 
-
     field :refresh_token, :auth_payload do
-  arg :refresh_token, non_null(:string)
-  resolve(&AuthResolver.refresh_token/3)
-end
-
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+      arg :refresh_token, non_null(:string)
+      resolve(&AuthResolver.refresh_token/3)
+    end
   end
 
   object :user do
@@ -113,12 +85,8 @@ end
   object :delete_user_response do
     field :message, :string
   end
-<<<<<<< Updated upstream
-=======
-
   object :auth_payload do
     field :token, :string
     field :refresh_token, :string
   end
->>>>>>> Stashed changes
 end

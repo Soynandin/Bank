@@ -44,6 +44,9 @@ defmodule BananaBankWeb.Endpoint do
     pass: ["*/*"],
     json_decoder: Phoenix.json_library()
 
+  # Configuração de CORS para permitir todas as requisições
+  plug CORSPlug, origin: "*"
+
   #plug Absinthe.Plug, schema: BananaBankWeb.Schema
   plug Plug.MethodOverride
   plug Plug.Head

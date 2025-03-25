@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL=ecto://postgres:postgres@db/banana_bank
+      - SECRET_KEY_BASE=your_secret_key_base_here
+      - GUARDIAN_SECRET=your_guardian_secret_here
+      - MIX_ENV=dev
+      - PHX_HOST=localhost
+      - PORT=4000
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - deps:/app/deps
+      - build:/app/_build
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=banana_bank
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+  deps:
+  build:
