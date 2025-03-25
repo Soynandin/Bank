@@ -1,8 +1,8 @@
 defmodule BananaBankWeb.Schema do
   use Absinthe.Schema
 
-  alias BananaBankWeb.Resolvers.{UserResolver, AuthResolver}
-  alias BananaBankWeb.Middleware.{Authenticate}
+  alias BananaBankWeb.Resolvers.UserResolver
+  alias BananaBankWeb.Resolvers.AuthResolver
 
   query do
     field :users, list_of(:user) do
@@ -19,8 +19,9 @@ defmodule BananaBankWeb.Schema do
     end
 
     field :me, :user do
-      middleware Authenticate
+      middleware BananaBankWeb.Middleware.Authenticate
       resolve fn _, _, %{context: %{current_user: user}} ->
+        IO.inspect(user, label: "Usuário autenticado")
         {:ok, user}
       end
     end
@@ -38,6 +39,7 @@ defmodule BananaBankWeb.Schema do
     end
 
     field :update_user, :user do
+      middleware BananaBankWeb.Middleware.Authenticate
       arg :id, non_null(:id)
       arg :first_name, :string
       arg :last_name, :string
@@ -46,6 +48,7 @@ defmodule BananaBankWeb.Schema do
       arg :role, :string
       resolve(&UserResolver.update_user/3)
     end
+
 
     field :delete_user, :delete_user_response do
       arg :id, non_null(:id)
@@ -58,14 +61,14 @@ defmodule BananaBankWeb.Schema do
       resolve(&AuthResolver.login/3)
     end
 
-    field :logout, :message do
-      middleware Authenticate
-      resolve(&AuthResolver.logout/3)
-    end
-
     field :refresh_token, :auth_payload do
       arg :refresh_token, non_null(:string)
       resolve(&AuthResolver.refresh_token/3)
+     end
+
+    field :logout, :message do
+      middleware BananaBankWeb.Middleware.Authenticate
+      resolve(&AuthResolver.logout/3)
     end
   end
 
@@ -85,8 +88,10 @@ defmodule BananaBankWeb.Schema do
   object :delete_user_response do
     field :message, :string
   end
+
   object :auth_payload do
-    field :token, :string
+    field :access_token, :string
     field :refresh_token, :string
   end
+
 end
