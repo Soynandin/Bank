@@ -202,6 +202,11 @@ mutation {
   login(email: "user@example.com", password: "password123") {
     accessToken
     refreshToken
+    user {
+      id
+      email
+      role
+    }
   }
 }
 
