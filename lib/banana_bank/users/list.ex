@@ -3,7 +3,7 @@ defmodule BananaBank.Users.List do
   alias BananaBank.Repo
   import Ecto.Query, only: [from: 2]
 
-  @valid_fields ~w(first_name last_name email document role)a  # Lista de campos válidos
+  @valid_fields ~w(first_name last_name email document role)a
 
   def call(limit \\ 10, offset \\ 0, order_by \\ "first_name", direction \\ "asc") do
     order_direction = if direction == "asc", do: :asc, else: :desc
@@ -11,9 +11,9 @@ defmodule BananaBank.Users.List do
     # Validação do campo de ordenação
     order_field =
       if order_by in @valid_fields do
-        String.to_atom(order_by)  # Converte para átomo
+        String.to_atom(order_by)
       else
-        :first_name  # Usa um valor padrão caso seja inválido
+        :first_name
       end
 
     query =
