@@ -1,7 +1,7 @@
 defmodule BananaBankWeb.Schema do
   use Absinthe.Schema
 
-  alias BananaBankWeb.Resolvers.{UserResolver, AuthResolver, TravelPackageResolver}
+  alias BananaBankWeb.Resolvers.{UserResolver, AuthResolver, TravelPackageResolver, ReservationResolver}
 
   import_types Absinthe.Type.Custom
 
@@ -40,6 +40,20 @@ defmodule BananaBankWeb.Schema do
       arg :id, non_null(:id)
       resolve(&TravelPackageResolver.get_package/3)
     end
+
+    field :reservations, list_of(:reservation) do
+      arg :limit, :integer, default_value: 10
+      arg :offset, :integer, default_value: 0
+      arg :order_by, :string, default_value: "id"
+      arg :direction, :string, default_value: "asc"
+      resolve(&ReservationResolver.list_reservations/3)
+    end
+
+    field :reservation, :reservation do
+      arg :id, non_null(:id)
+      resolve(&ReservationResolver.get_reservation/3)
+    end
+
   end
 
   # ========== MUTATIONS ==========
@@ -115,6 +129,24 @@ defmodule BananaBankWeb.Schema do
       arg :id, non_null(:id)
       resolve(&TravelPackageResolver.delete_package/3)
     end
+
+    field :create_reservation, :reservation do
+      middleware BananaBankWeb.Middleware.Authenticate
+      arg :input, non_null(:reservation_input)
+      resolve(&ReservationResolver.create_reservation/3)
+    end
+
+    field :update_reservation, :reservation do
+      middleware BananaBankWeb.Middleware.Authenticate
+      arg :input, non_null(:reservation_input)
+      resolve(&ReservationResolver.update_reservation/3)
+    end
+
+    field :delete_reservation, :message do
+      middleware BananaBankWeb.Middleware.Authenticate
+      arg :id, non_null(:id)
+      resolve(&ReservationResolver.delete_reservation/3)
+    end
   end
 
   # ========== OBJECT TYPES ==========
@@ -154,5 +186,56 @@ defmodule BananaBankWeb.Schema do
 
   object :delete_user_response do
     field :message, :string
+  end
+
+  object :reservation do
+    field :id, :id
+    field :client_id, :id
+    field :package_id, :id
+    field :agency_id, :id
+    field :status, :reservation_status
+    field :reservation_date, :naive_datetime
+    field :expiration_date, :naive_datetime
+    field :payment_method, :payment_method
+    field :total_price, :float
+    field :traveler_count, :integer
+    field :cancellation_policy, :cancellation_policy
+  end
+
+  # ========== INPUT ==========
+
+  input_object :reservation_input do
+    field :client_id, non_null(:id)
+    field :package_id, non_null(:id)
+    field :agency_id, non_null(:id)
+    field :status, :reservation_status
+    field :reservation_date, non_null(:naive_datetime)
+    field :expiration_date, non_null(:naive_datetime)
+    field :payment_method, non_null(:payment_method)
+    field :total_price, non_null(:float)
+    field :traveler_count, non_null(:integer)
+    field :cancellation_policy, non_null(:cancellation_policy)
+  end
+
+  # ========== ENUMS ==========
+
+  enum :reservation_status do
+    value :pending
+    value :confirmed
+    value :expired
+    value :canceled
+    value :refunded
+  end
+
+  enum :payment_method do
+    value :pix
+    value :credit_card
+    value :boleto
+  end
+
+  enum :cancellation_policy do
+    value :flexivel
+    value :moderada
+    value :rigida
   end
 end
