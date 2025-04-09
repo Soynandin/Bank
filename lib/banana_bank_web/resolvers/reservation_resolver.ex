@@ -18,6 +18,21 @@ defmodule BananaBankWeb.Resolvers.ReservationResolver do
     Reservations.create(input)
   end
 
+  def create_temporary_reservation(_, %{client_id: client_id, package_id: package_id}, _) do
+    case Reservations.create_temporary_reservation(client_id, package_id) do
+      {:ok, reservation} -> {:ok, reservation}
+      {:error, changeset} -> {:error, format_changeset_errors(changeset)}
+    end
+  end
+
+  defp format_changeset_errors(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
+      Enum.reduce(opts, msg, fn {key, value}, acc ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+      end)
+    end)
+  end
+
   def update_reservation(_, %{input: input}, _res) do
     Reservations.update(input)
   end
@@ -25,4 +40,5 @@ defmodule BananaBankWeb.Resolvers.ReservationResolver do
   def delete_reservation(_, %{id: id}, _res) do
     Reservations.delete(id)
   end
+
 end

@@ -115,6 +115,12 @@ defmodule BananaBankWeb.Schema do
       resolve(&TravelPackageResolver.create_package/3)
     end
 
+    field :create_temporary_reservation, type: :reservation do
+      arg :client_id, non_null(:id)
+      arg :package_id, non_null(:id)
+      resolve(&ReservationResolver.create_temporary_reservation/3)
+    end
+
     field :update_travel_package, :travel_package do
       middleware BananaBankWeb.Middleware.Authenticate
       arg :id, non_null(:id)
@@ -193,13 +199,14 @@ defmodule BananaBankWeb.Schema do
     field :client_id, :id
     field :package_id, :id
     field :agency_id, :id
-    field :status, :reservation_status
-    field :reservation_date, :naive_datetime
-    field :expiration_date, :naive_datetime
-    field :payment_method, :payment_method
-    field :total_price, :float
+    field :status, :string
+    field :token, :string
+    field :reservation_date, :datetime
+    field :expiration_date, :datetime
+    field :payment_method, :string
+    field :total_price, :decimal
     field :traveler_count, :integer
-    field :cancellation_policy, :cancellation_policy
+    field :cancellation_policy, :string
   end
 
   # ========== INPUT ==========
