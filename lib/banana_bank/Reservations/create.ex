@@ -37,11 +37,18 @@ defmodule BananaBank.Reservations.Create do
     end
   end
 
-  # Busca segura do pacote de viagem
+  defp get_package(id) when is_binary(id) do
+    case Integer.parse(id) do
+      {parsed_id, ""} -> get_package(parsed_id)
+      _ -> {:error, :invalid_package_id}
+    end
+  end
+
   defp get_package(id) when is_integer(id) do
     case Repo.get(TravelPackage, id) do
       nil -> {:error, :package_not_found}
       package -> {:ok, package}
     end
   end
+
 end

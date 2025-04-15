@@ -7,12 +7,22 @@ defmodule BananaBankWeb.Resolvers.ReservationResolver do
     {:ok, Reservations.get_all(limit, offset, order_by, direction)}
   end
 
-  def get_reservation(_, %{id: id}, _res) do
+  def get_reservation(_, %{id: id}, %{context: %{current_user: %{id: user_id, role: "client"}}}) do
+    case Reservations.get(id) do
+      nil -> {:error, "Reservation not found"}
+      %{client_id: ^user_id} = reservation -> {:ok, reservation}
+      _ -> {:error, "Unauthorized"}
+    end
+  end
+
+  # Admins ou Agências podem ver tudo (exemplo)
+  def get_reservation(_, %{id: id}, %{context: %{current_user: %{role: role}}}) when role in ["admin", "agency"] do
     case Reservations.get(id) do
       nil -> {:error, "Reservation not found"}
       reservation -> {:ok, reservation}
     end
   end
+
 
   def create_reservation(_, %{input: input}, _res) do
     Reservations.create(input)
